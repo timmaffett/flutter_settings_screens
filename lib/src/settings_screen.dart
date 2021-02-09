@@ -1828,11 +1828,17 @@ class SliderSettingsTile extends StatefulWidget {
   final String units;
   final bool enabled;
   final bool eagerUpdate;
+  /// min value allowed for the slider
   final double min;
+  /// max value allowed for the slider
   final double max;
+  /// step value for slider interval
   final double step;
+  /// on change callback to handle the value change
   final OnChanged<double> onChange;
+  /// on change callback to handle the value change when slider starts moving
   final OnChanged<double> onChangeStart;
+  /// on change callback to handle the value change when slider stops moving
   final OnChanged<double> onChangeEnd;
   /// The callback used to create a semantic value from a slider value.
   final String Function(double) semanticFormatterCallback;
@@ -1893,7 +1899,7 @@ class _SliderSettingsTileState extends State<SliderSettingsTile> {
                   _handleSliderChangeStart(newValue, onChanged),
               onChangeEnd: (newValue) =>
                   _handleSliderChangeEnd(newValue, onChanged),
-              semanticFormatterCallback: widget.semanticFormatterCallback,
+              semanticFormatterCallback: (newValue) => _handleSemanticFormatterCallback(newValue),
               enabled: widget.enabled,
               value: value,
               max: widget.max,
@@ -1927,6 +1933,9 @@ class _SliderSettingsTileState extends State<SliderSettingsTile> {
     widget.onChangeEnd?.call(newValue);
   }
 
+  String _handleSemanticFormatterCallback(double newValue) {
+    return widget.semanticFormatterCallback!=null ? widget.semanticFormatterCallback?.call(newValue) : newValue.toString();
+  }
 }
 
 /// [ColorPickerSettingsTile] is a widget which allows user to
