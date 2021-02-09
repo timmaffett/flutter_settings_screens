@@ -596,6 +596,9 @@ class _SettingsSlider extends StatelessWidget {
   /// on change callback to handle the value change when slider stops moving
   final OnChanged<double> onChangeEnd;
 
+  /// The callback used to create a semantic value from a slider value.
+  final String Function(double) semanticFormatterCallback;
+
   /// flag which represents the state of the settings, if false then the tile will
   /// ignore all the user inputs
   final bool enabled;
@@ -609,6 +612,7 @@ class _SettingsSlider extends StatelessWidget {
     this.onChangeStart,
     this.onChanged,
     this.onChangeEnd,
+    this.semanticFormatterCallback
   });
 
   @override
@@ -621,6 +625,7 @@ class _SettingsSlider extends StatelessWidget {
       onChangeStart: enabled ? onChangeStart : null,
       onChanged: enabled ? onChanged : null,
       onChangeEnd: enabled ? onChangeEnd : null,
+      semanticFormatterCallback: enabled ? semanticFormatterCallback : null,
     );
   }
 }
@@ -1829,6 +1834,8 @@ class SliderSettingsTile extends StatefulWidget {
   final OnChanged<double> onChange;
   final OnChanged<double> onChangeStart;
   final OnChanged<double> onChangeEnd;
+  /// The callback used to create a semantic value from a slider value.
+  final String Function(double) semanticFormatterCallback;
   final Widget leading;
 
   SliderSettingsTile({
@@ -1845,7 +1852,8 @@ class SliderSettingsTile extends StatefulWidget {
     this.onChangeEnd,
     this.leading,
     this.subtitle = '',
-    this.units = ''
+    this.units = '',
+    this.semanticFormatterCallback,
   });
 
   @override
@@ -1885,6 +1893,7 @@ class _SliderSettingsTileState extends State<SliderSettingsTile> {
                   _handleSliderChangeStart(newValue, onChanged),
               onChangeEnd: (newValue) =>
                   _handleSliderChangeEnd(newValue, onChanged),
+              semanticFormatterCallback: widget.semanticFormatterCallback,
               enabled: widget.enabled,
               value: value,
               max: widget.max,
@@ -1917,6 +1926,7 @@ class _SliderSettingsTileState extends State<SliderSettingsTile> {
     _updateWidget(newValue, onChanged);
     widget.onChangeEnd?.call(newValue);
   }
+
 }
 
 /// [ColorPickerSettingsTile] is a widget which allows user to
