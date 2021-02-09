@@ -1820,6 +1820,7 @@ class SliderSettingsTile extends StatefulWidget {
   final double defaultValue;
   final String title;
   final String subtitle;
+  final String units;
   final bool enabled;
   final bool eagerUpdate;
   final double min;
@@ -1844,6 +1845,7 @@ class SliderSettingsTile extends StatefulWidget {
     this.onChangeEnd,
     this.leading,
     this.subtitle = '',
+    this.units = ''
   });
 
   @override
@@ -1873,7 +1875,7 @@ class _SliderSettingsTileState extends State<SliderSettingsTile> {
               title: widget.title,
               subtitle: widget.subtitle != null && widget.subtitle.isNotEmpty
                   ? widget.subtitle
-                  : value.toString(),
+                  : (widget.units != null && widget.units.isNotEmpty ? value.toString()+widget.units : value.toString()),
               leading: widget.leading,
             ),
             _SettingsSlider(
