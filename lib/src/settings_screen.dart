@@ -162,9 +162,9 @@ class __SettingsTileState extends State<_SettingsTile> {
             subtitle: widget.subtitle.isEmpty
                 ? null
                 : Text(
-                    widget.subtitle,
-                    style: subtitleTextStyle(context),
-                  ),
+              widget.subtitle,
+              style: subtitleTextStyle(context),
+            ),
             enabled: widget.enabled,
             onTap: widget.onTap,
             trailing: Visibility(
@@ -221,9 +221,9 @@ class __SimpleHeaderTileState extends State<_SimpleHeaderTile> {
         ),
         subtitle: widget.subtitle.isNotEmpty
             ? Text(
-                widget.subtitle,
-                style: subtitleTextStyle(context),
-              )
+          widget.subtitle,
+          style: subtitleTextStyle(context),
+        )
             : null,
         leading: widget.leading,
       ),
@@ -381,11 +381,11 @@ class __ModalSettingsTileState extends State<_ModalSettingsTile> {
   Widget getTitle() {
     return widget.leading != null
         ? Row(
-            children: <Widget>[
-              widget.leading,
-              Text(widget.title, style: headerTextStyle(context)),
-            ],
-          )
+      children: <Widget>[
+        widget.leading,
+        Text(widget.title, style: headerTextStyle(context)),
+      ],
+    )
         : Text(widget.title, style: headerTextStyle(context));
   }
 
@@ -560,7 +560,7 @@ class _SettingsDropDown<T> extends StatelessWidget {
           onChanged: enabled ? onChanged : null,
           underline: Container(),
           items: values.map<DropdownMenuItem<T>>(
-            (T val) {
+                (T val) {
               return DropdownMenuItem<T>(
                 child: itemBuilder(val),
                 value: val,
@@ -596,9 +596,6 @@ class _SettingsSlider extends StatelessWidget {
   /// on change callback to handle the value change when slider stops moving
   final OnChanged<double> onChangeEnd;
 
-  /// The callback used to create a semantic value from a slider value.
-  final String Function(double) semanticFormatterCallback;
-
   /// flag which represents the state of the settings, if false then the tile will
   /// ignore all the user inputs
   final bool enabled;
@@ -611,13 +608,24 @@ class _SettingsSlider extends StatelessWidget {
     @required this.enabled,
     this.onChangeStart,
     this.onChanged,
-    this.onChangeEnd,
-    this.semanticFormatterCallback
+    this.onChangeEnd
   });
 
   @override
   Widget build(BuildContext context) {
-    return Slider(
+    return /*SizedBox(
+        height: 40,
+        child: SliderTheme(
+        data: SliderTheme.of(context).copyWith(
+      activeTrackColor: Colors.red,
+      inactiveTrackColor: Colors.black,
+      trackHeight: 3.0,
+      thumbColor: Colors.yellow,
+      thumbShape: RoundSliderThumbShape(enabledThumbRadius: 8.0),
+      overlayColor: Colors.purple.withAlpha(32),
+      overlayShape: RoundSliderOverlayShape(overlayRadius: 14.0),
+    ),
+    child:*/ Slider(
       value: value,
       min: min,
       max: max,
@@ -625,8 +633,8 @@ class _SettingsSlider extends StatelessWidget {
       onChangeStart: enabled ? onChangeStart : null,
       onChanged: enabled ? onChanged : null,
       onChangeEnd: enabled ? onChangeEnd : null,
-      semanticFormatterCallback: enabled ? semanticFormatterCallback : null,
-    );
+    )// ) )
+        ;
   }
 }
 
@@ -940,7 +948,7 @@ class SettingsContainer extends StatelessWidget {
 
   Widget _buildChild() {
     Widget child =
-        allowScrollInternally ? getList(children) : getColumn(children);
+    allowScrollInternally ? getList(children) : getColumn(children);
     return Padding(
       padding: EdgeInsets.only(
         top: 16.0,
@@ -1669,7 +1677,7 @@ class _RadioSettingsTileState<T> extends State<RadioSettingsTile<T>> {
   Widget _buildRadioTiles(
       BuildContext context, T groupValue, OnChanged<T> onChanged) {
     List<Widget> radioList =
-        widget.values.entries.map<Widget>((MapEntry<T, String> entry) {
+    widget.values.entries.map<Widget>((MapEntry<T, String> entry) {
       return _SettingsTile(
         title: entry.value,
         onTap: () => _onRadioChange(entry.key, onChanged),
@@ -1828,6 +1836,7 @@ class SliderSettingsTile extends StatefulWidget {
   final String units;
   final bool enabled;
   final bool eagerUpdate;
+
   /// min value allowed for the slider
   final double min;
   /// max value allowed for the slider
@@ -1840,8 +1849,9 @@ class SliderSettingsTile extends StatefulWidget {
   final OnChanged<double> onChangeStart;
   /// on change callback to handle the value change when slider stops moving
   final OnChanged<double> onChangeEnd;
-  /// The callback used to create a semantic value from a slider value.
-  final String Function(double) semanticFormatterCallback;
+  /// The callback used to create a subtitle from a slider value.
+  final String Function(double) subtitleFormatterCallback;
+  /// Widget placed in front of title
   final Widget leading;
 
   SliderSettingsTile({
@@ -1859,7 +1869,7 @@ class SliderSettingsTile extends StatefulWidget {
     this.leading,
     this.subtitle = '',
     this.units = '',
-    this.semanticFormatterCallback,
+    this.subtitleFormatterCallback,
   });
 
   @override
@@ -1885,13 +1895,15 @@ class _SliderSettingsTileState extends State<SliderSettingsTile> {
         debugPrint('creating settings Tile: ${widget.settingKey}');
         return SettingsContainer(
           children: <Widget>[
-            _SimpleHeaderTile(
-              title: widget.title,
-              subtitle: widget.subtitle != null && widget.subtitle.isNotEmpty
-                  ? widget.subtitle
-                  : (widget.units != null && widget.units.isNotEmpty ? value.toString()+widget.units : value.toString()),
-              leading: widget.leading,
-            ),
+            SizedBox(
+                height: 50,
+                child: _SimpleHeaderTile(
+                  title: widget.title,
+                  subtitle: widget.subtitle != null && widget.subtitle.isNotEmpty
+                      ? widget.subtitle
+                      : (widget.units != null && widget.units.isNotEmpty ? _handleSubtitleFormatterCallback(value)+widget.units : _handleSubtitleFormatterCallback(value)),
+                  leading: widget.leading,
+                ) ),
             _SettingsSlider(
               onChanged: (newValue) =>
                   _handleSliderChanged(newValue, onChanged),
@@ -1899,7 +1911,6 @@ class _SliderSettingsTileState extends State<SliderSettingsTile> {
                   _handleSliderChangeStart(newValue, onChanged),
               onChangeEnd: (newValue) =>
                   _handleSliderChangeEnd(newValue, onChanged),
-              semanticFormatterCallback: (newValue) => _handleSemanticFormatterCallback(newValue),
               enabled: widget.enabled,
               value: value,
               max: widget.max,
@@ -1933,8 +1944,8 @@ class _SliderSettingsTileState extends State<SliderSettingsTile> {
     widget.onChangeEnd?.call(newValue);
   }
 
-  String _handleSemanticFormatterCallback(double newValue) {
-    return widget.semanticFormatterCallback!=null ? widget.semanticFormatterCallback?.call(newValue) : newValue.toString();
+  String _handleSubtitleFormatterCallback(double newValue) {
+    return widget.subtitleFormatterCallback!=null ? widget.subtitleFormatterCallback?.call(newValue) : newValue.toString();
   }
 }
 
