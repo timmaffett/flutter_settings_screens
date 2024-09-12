@@ -26,7 +26,7 @@ typedef OnChanged<T> = void Function(T);
 typedef OnConfirmedCallback = bool Function();
 
 /// This function type is used for callbacks which format a value
-/// and return a string. 
+/// and return a string.
 typedef OnFormatterCallback<T> = String Function(T);
 
 /// This class behaves as a bridge between the settings screen widgets and the
